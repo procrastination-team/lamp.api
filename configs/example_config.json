@@ -1,0 +1,9 @@
+{
+  "listen_address": "0.0.0.0:1337",
+  "database":
+  {
+    "address": "mongodb://admin:password@mongo",
+    "database": "default",
+    "collection": "lamps"
+  }
+}
