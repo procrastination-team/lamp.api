@@ -170,7 +170,7 @@ paths:
       tags: []
       responses:
         '200':
-          description: All lamps data
+          description: OK
           content:
             application/json:
               schema:
@@ -192,6 +192,84 @@ paths:
                       maximum: 100
       operationId: get-all-lamps
       description: Get all lamps in the local network
+  /group:
+    parameters: []
+    get:
+      summary: Your GET endpoint
+      tags: []
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: string
+                  name:
+                    type: string
+      operationId: get-group
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                id:
+                  type: string
+            examples:
+              example-1:
+                value:
+                  id: string
+                  name: string
+        description: Id of group
+      description: Get group by id
+    post:
+      summary: ''
+      operationId: post-group-id
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: string
+                  name:
+                    type: string
+      description: Create group
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+        description: Group data to create group
+  /all-groups:
+    get:
+      summary: Your GET endpoint
+      tags: []
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    id:
+                      type: string
+                    name:
+                      type: string
+      operationId: get-all-groups
+      description: Get all groups in network
 components:
   schemas:
     LampData:
@@ -221,3 +299,15 @@ components:
         - power
         - brightness
       title: ''
+    GroupModel:
+      title: GroupModel
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+      x-examples:
+        example-1:
+          id: string
+          name: string
