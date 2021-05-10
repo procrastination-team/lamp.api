@@ -13,9 +13,17 @@ type DatabaseConfig struct {
 	Collection string `json:"collection"`
 }
 
+type MqttConfig struct {
+	Address  string `json:"address"`
+	Username string `json:"username"`
+	Password string `json:"password"`
+	ClientID string `json:"client_id"`
+}
+
 type Settings struct {
 	ListenAddress string         `json:"listen_address"`
 	Database      DatabaseConfig `json:"database"`
+	Mqtt          MqttConfig     `json:"mqtt"`
 }
 
 func Init(cfgFile string) (*Settings, error) {
