@@ -15,7 +15,7 @@ import (
 var cfgFile string
 
 func init() {
-	flag.StringVar(&cfgFile, "config", "", "path to config file")
+	flag.StringVar(&cfgFile, "config", "configs/example_config.json", "path to config file")
 }
 
 func main() {

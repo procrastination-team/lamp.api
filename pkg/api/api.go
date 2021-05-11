@@ -5,20 +5,22 @@ import (
 	"fmt"
 	"log"
 	"net/http"
-	"time"
+//	"time"
 
 	mqtt "github.com/eclipse/paho.mqtt.golang"
 	"github.com/gin-gonic/gin"
 	"github.com/procrastination-team/lamp.api/pkg/config"
+	"github.com/procrastination-team/lamp.api/internal/db"
 )
 
 type LampAPI struct {
 	http       *http.Server
 	mqttClient mqtt.Client
+	mongoClient *db.Storage
 }
 
 func New(conf *config.Settings, ctx context.Context) (*LampAPI, error) {
-	opts := mqtt.NewClientOptions()
+/*	opts := mqtt.NewClientOptions()
 	opts.AddBroker(fmt.Sprintf("tcp://%s", conf.Mqtt.Address))
 	opts.SetUsername(conf.Mqtt.Username)
 	opts.SetPassword(conf.Mqtt.Password)
@@ -30,13 +32,19 @@ func New(conf *config.Settings, ctx context.Context) (*LampAPI, error) {
 	}
 	if err := token.Error(); err != nil {
 		log.Fatal(err)
+	}*/
+
+	mongo, err := db.New(&conf.Database, ctx)
+	if err != nil {
+		return nil, err
 	}
 
 	l := &LampAPI{
 		http: &http.Server{
 			Addr: conf.ListenAddress,
 		},
-		mqttClient: client,
+		mongoClient: mongo,
+	//	mqttClient: client,
 	}
 	l.http.Handler = l.setupRouter()
 
@@ -94,7 +102,12 @@ func (l *LampAPI) getLampByID(c *gin.Context) {
 }
 
 func (l *LampAPI) getLamps(c *gin.Context) {
-	c.JSON(http.StatusOK, gin.H{})
+	lamps, err := l.mongoClient.GetLamps()
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"failed to get lamps": err.Error()})
+		return
+	}
+	c.JSON(http.StatusOK, lamps)
 }
 
 func (l *LampAPI) helloworld(c *gin.Context) {
