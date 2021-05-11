@@ -1,19 +1,18 @@
 package db
 
 import (
-	"fmt"
 	"context"
 
-	"go.mongodb.org/mongo-driver/bson"
-	"github.com/procrastination-team/lamp.api/pkg/lamp"
 	"github.com/procrastination-team/lamp.api/pkg/config"
+	"github.com/procrastination-team/lamp.api/pkg/lamp"
+	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
 type Storage struct {
-	client *mongo.Client
-	collection   *mongo.Collection
+	client     *mongo.Client
+	collection *mongo.Collection
 }
 
 func New(conf *config.DatabaseConfig, ctx context.Context) (*Storage, error) {
@@ -29,13 +28,13 @@ func New(conf *config.DatabaseConfig, ctx context.Context) (*Storage, error) {
 	}
 
 	err = client.Ping(ctx, nil)
-  if err != nil {
-	  return nil, err
-  }
+	if err != nil {
+		return nil, err
+	}
 
 	mongoSt := &Storage{
-		client: client,
-		collection:   client.Database("procrastination").Collection("lamps"),
+		client:     client,
+		collection: client.Database("procrastination").Collection("lamps"),
 	}
 
 	return mongoSt, nil

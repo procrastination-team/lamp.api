@@ -5,34 +5,33 @@ import (
 	"fmt"
 	"log"
 	"net/http"
-//	"time"
 
 	mqtt "github.com/eclipse/paho.mqtt.golang"
 	"github.com/gin-gonic/gin"
-	"github.com/procrastination-team/lamp.api/pkg/config"
 	"github.com/procrastination-team/lamp.api/internal/db"
+	"github.com/procrastination-team/lamp.api/pkg/config"
 )
 
 type LampAPI struct {
-	http       *http.Server
-	mqttClient mqtt.Client
+	http        *http.Server
+	mqttClient  mqtt.Client
 	mongoClient *db.Storage
 }
 
 func New(conf *config.Settings, ctx context.Context) (*LampAPI, error) {
-/*	opts := mqtt.NewClientOptions()
-	opts.AddBroker(fmt.Sprintf("tcp://%s", conf.Mqtt.Address))
-	opts.SetUsername(conf.Mqtt.Username)
-	opts.SetPassword(conf.Mqtt.Password)
-	opts.SetClientID(conf.Mqtt.ClientID)
+	/*	opts := mqtt.NewClientOptions()
+		opts.AddBroker(fmt.Sprintf("tcp://%s", conf.Mqtt.Address))
+		opts.SetUsername(conf.Mqtt.Username)
+		opts.SetPassword(conf.Mqtt.Password)
+		opts.SetClientID(conf.Mqtt.ClientID)
 
-	client := mqtt.NewClient(opts)
-	token := client.Connect()
-	for !token.WaitTimeout(3 * time.Second) {
-	}
-	if err := token.Error(); err != nil {
-		log.Fatal(err)
-	}*/
+		client := mqtt.NewClient(opts)
+		token := client.Connect()
+		for !token.WaitTimeout(3 * time.Second) {
+		}
+		if err := token.Error(); err != nil {
+			log.Fatal(err)
+		}*/
 
 	mongo, err := db.New(&conf.Database, ctx)
 	if err != nil {
@@ -44,7 +43,7 @@ func New(conf *config.Settings, ctx context.Context) (*LampAPI, error) {
 			Addr: conf.ListenAddress,
 		},
 		mongoClient: mongo,
-	//	mqttClient: client,
+		//	mqttClient: client,
 	}
 	l.http.Handler = l.setupRouter()
 
