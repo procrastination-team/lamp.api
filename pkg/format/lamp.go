@@ -1,4 +1,4 @@
-package lamp
+package format
 
 type Lamp struct {
 	ID         string `json:"id"`
