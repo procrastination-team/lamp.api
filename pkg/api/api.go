@@ -92,7 +92,7 @@ func (l *LampAPI) getLampByID(c *gin.Context) {
 
 	lamp, err := l.mongoClient.GetLampByID(id)
 	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"failed to get lamp": err.Error()})
+		c.JSON(http.StatusBadRequest, gin.H{"status": 404, "error": "failed to get lamp"})
 		return
 	}
 
@@ -102,7 +102,7 @@ func (l *LampAPI) getLampByID(c *gin.Context) {
 func (l *LampAPI) getLamps(c *gin.Context) {
 	lamps, err := l.mongoClient.GetLamps()
 	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"failed to get lamps": err.Error()})
+		c.JSON(http.StatusBadRequest, gin.H{"status": 404, "error": "failed to get lamps"})
 		return
 	}
 	c.JSON(http.StatusOK, lamps)
@@ -111,24 +111,24 @@ func (l *LampAPI) getLamps(c *gin.Context) {
 func (l *LampAPI) connectLamp(c *gin.Context) {
 	bodyBytes, err := ioutil.ReadAll(c.Request.Body)
 	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"failed to read request body": err.Error()})
+		c.JSON(http.StatusInternalServerError, gin.H{"status": 500, "error": "failed to read request body"})
 		return
 	}
 
 	lamp := format.Lamp{}
 	err = json.Unmarshal(bodyBytes, &lamp)
 	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"failed to parse JSON": err.Error()})
+		c.JSON(http.StatusBadRequest, gin.H{"status": 404, "error": "failed to parse JSON request"})
 		return
 	}
 
 	err = l.mongoClient.CreateLamp(lamp)
 	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"failed to connect new lamp": err.Error()})
+		c.JSON(http.StatusInternalServerError, gin.H{"status": 500, "error": "failed to connect new lamp"})
 		return
 	}
 
-	c.JSON(http.StatusOK, gin.H{})
+	c.JSON(http.StatusOK, gin.H{"status": "OK"})
 }
 
 func (l *LampAPI) updateLamp(c *gin.Context) {
@@ -136,14 +136,14 @@ func (l *LampAPI) updateLamp(c *gin.Context) {
 
 	bodyBytes, err := ioutil.ReadAll(c.Request.Body)
 	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"failed to read request body": err.Error()})
+		c.JSON(http.StatusInternalServerError, gin.H{"status": 500, "error": "failed to read request body"})
 		return
 	}
 
 	lamp := format.Lamp{}
 	err = json.Unmarshal(bodyBytes, &lamp)
 	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"failed to parse JSON": err.Error()})
+		c.JSON(http.StatusBadRequest, gin.H{"status": 404, "error": "failed to parse JSON request"})
 		return
 	}
 
@@ -151,22 +151,22 @@ func (l *LampAPI) updateLamp(c *gin.Context) {
 
 	err = l.mongoClient.UpdateLamp(lamp)
 	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"failed to update lamp": err.Error()})
+		c.JSON(http.StatusInternalServerError, gin.H{"status": 500, "error": "failed to update lamp"})
 		return
 	}
 
-	c.JSON(http.StatusOK, gin.H{})
+	c.JSON(http.StatusOK, gin.H{"status": "OK"})
 }
 
 func (l *LampAPI) deleteLamp(c *gin.Context) {
 	id := c.Param("id")
 	err := l.mongoClient.DeleteLamp(id)
 	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"failed to delete lamp": err.Error()})
+		c.JSON(http.StatusBadRequest, gin.H{"status": 400, "error": "failed to delete lamp"})
 		return
 	}
 
-	c.JSON(http.StatusOK, gin.H{})
+	c.JSON(http.StatusOK, gin.H{"status": "OK"})
 }
 
 func (l *LampAPI) helloworld(c *gin.Context) {

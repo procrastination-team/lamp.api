@@ -2,7 +2,7 @@
   "listen_address": "0.0.0.0:1337",
   "database":
   {
-    "address": "mongodb://127.0.0.1:27017/procrastination",
+    "address": "mongodb://root:pass12345@127.0.0.1:27017",
     "database": "default",
     "collection": "lamps"
   }

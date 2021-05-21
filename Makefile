@@ -1,14 +1,15 @@
 CMD := api
 
+docker:
+	docker build --tag $(CMD) -f ./Dockerfile .
+	docker run -p 80:80 $(CMD)
+
 build:
 	go build -o $(CMD) ./cmd/main.go
 
 run:
 	make build
 	./$(CMD)
-
-docker:
-	docker build --tag $(CMD) -f ./build/Dockerfile .
 
 lint: 
 	golangci-lint run ./...
