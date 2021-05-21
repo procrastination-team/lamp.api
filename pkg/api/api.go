@@ -79,10 +79,10 @@ func (l *LampAPI) setupRouter() *gin.Engine {
 	r.GET("/helloworld", l.helloworld)
 
 	r.GET("/api/lamps", l.getLamps)
-	r.GET("/api/lamp/{id}", l.getLampByID)
+	r.GET("/api/lamp/:id", l.getLampByID)
 	r.POST("/api/lamps", l.connectLamp)
-	r.PUT("/api/lamp/{id}", l.updateLamp)
-	r.DELETE("/api/lamp/{id}", l.deleteLamp)
+	r.PUT("/api/lamp/:id", l.updateLamp)
+	r.DELETE("/api/lamp/:id", l.deleteLamp)
 
 	return r
 }
