@@ -4,7 +4,7 @@
   "logger":
   {
     "file": "api.log",
-    "level": "Debug"
+    "level": "debug"
   },
   "database":
   {
