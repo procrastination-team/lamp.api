@@ -8,8 +8,15 @@
   },
   "database":
   {
-    "address": "mongodb://root:pass12345@127.0.0.1:27017",
+    "address": "mongodb://root:pass12345@mongodb:27017",
     "database": "default",
     "collection": "lamps"
+  },
+  "mqtt":
+  {
+    "address": "broker:1883",
+    "username": "root",
+    "password": "pass12345",
+    "clientId": "1"
   }
 }

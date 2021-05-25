@@ -5,24 +5,34 @@ networks:
   db:
     driver: bridge
 services:
-  db:
-    container_name: db
-    hostname: db
-    image: "mongo"
+  mongodb:
+    container_name: mongodb
+    hostname: mongodb
+    image: mongo
+    command: mongod --smallfiles
     ports:
       - 27017:27017
     env_file: ../configs/.env
     networks:
       - db
-  mqtt:
-    container_name: rabbitmq
-    hostname: rabbitmq
+
+  mongo_seed:
+    build:
+      context: ./
+      dockerfile: ./Dockerfile_mongo
+    links:
+      - mongodb
+
+  broker:
+    container_name: broker
+    hostname: broker
     image: "eclipse-mosquitto"
     ports:
       - 1883:1883
       - 9001:9001
     networks:
       - mq
+
   api:
     build:
       context: ../
@@ -31,8 +41,8 @@ services:
       - 1337:1337
     restart: on-failure
     depends_on:
-      - db
-      - mqtt
+      - mongodb
+      - broker
     networks:
       - db
       - mq

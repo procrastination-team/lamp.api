@@ -26,7 +26,7 @@ type MqttConfig struct {
 	Address  string `json:"address"`
 	Username string `json:"username"`
 	Password string `json:"password"`
-	ClientID string `json:"client_id"`
+	ClientID string `json:"clientId"`
 }
 
 type LoggerSettings struct {
