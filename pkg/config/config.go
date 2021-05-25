@@ -7,6 +7,15 @@ import (
 	"github.com/spf13/viper"
 )
 
+type LogLevel string
+
+const (
+	Debug LogLevel = "debug"
+	Error LogLevel = "error"
+	Info  LogLevel = "info"
+	Warn  LogLevel = "warn"
+)
+
 type DatabaseConfig struct {
 	Address    string `json:"address"`
 	Database   string `json:"database"`
@@ -20,10 +29,17 @@ type MqttConfig struct {
 	ClientID string `json:"client_id"`
 }
 
+type LoggerSettings struct {
+	File  string   `json:"file"`
+	Level LogLevel `json:"level"`
+}
+
 type Settings struct {
-	ListenAddress string         `json:"listen_address"`
-	Database      DatabaseConfig `json:"database"`
-	Mqtt          MqttConfig     `json:"mqtt"`
+	Host     string         `json:"host"`
+	Port     string         `json:"port"`
+	Logger   LoggerSettings `json:"logger"`
+	Database DatabaseConfig `json:"database"`
+	Mqtt     MqttConfig     `json:"mqtt"`
 }
 
 func Init(cfgFile string) (*Settings, error) {

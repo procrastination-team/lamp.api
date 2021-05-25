@@ -1,0 +1,38 @@
+version: '3.8'
+networks:
+  mq:
+    driver: bridge
+  db:
+    driver: bridge
+services:
+  db:
+    container_name: db
+    hostname: db
+    image: "mongo"
+    ports:
+      - 27017:27017
+    env_file: ../configs/.env
+    networks:
+      - db
+  mqtt:
+    container_name: rabbitmq
+    hostname: rabbitmq
+    image: "eclipse-mosquitto"
+    ports:
+      - 1883:1883
+      - 9001:9001
+    networks:
+      - mq
+  api:
+    build:
+      context: ../
+      dockerfile: ./build/Dockerfile
+    ports:
+      - 1337:1337
+    restart: on-failure
+    depends_on:
+      - db
+      - mqtt
+    networks:
+      - db
+      - mq

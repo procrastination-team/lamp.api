@@ -1,5 +1,11 @@
 {
-  "listen_address": "0.0.0.0:1337",
+  "host": "0.0.0.0",
+  "port": "1337",
+  "logger":
+  {
+    "file": "api.log",
+    "level": "Debug"
+  },
   "database":
   {
     "address": "mongodb://root:pass12345@127.0.0.1:27017",

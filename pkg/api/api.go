@@ -3,16 +3,18 @@ package api
 import (
 	"context"
 	"encoding/json"
-	"fmt"
 	"io/ioutil"
-	"log"
+	"net"
 	"net/http"
+	"time"
 
+	ginzap "github.com/akath19/gin-zap"
 	mqtt "github.com/eclipse/paho.mqtt.golang"
 	"github.com/gin-gonic/gin"
 	"github.com/procrastination-team/lamp.api/internal/db"
 	"github.com/procrastination-team/lamp.api/pkg/config"
 	"github.com/procrastination-team/lamp.api/pkg/format"
+	"go.uber.org/zap"
 )
 
 type LampAPI struct {
@@ -43,10 +45,10 @@ func New(conf *config.Settings, ctx context.Context) (*LampAPI, error) {
 
 	l := &LampAPI{
 		http: &http.Server{
-			Addr: conf.ListenAddress,
+			Addr: net.JoinHostPort(conf.Host, conf.Port),
 		},
 		mongoClient: mongo,
-		//	mqttClient: client,
+		//		mqttClient:  client,
 	}
 	l.http.Handler = l.setupRouter()
 
@@ -58,24 +60,26 @@ func (l *LampAPI) Run() {
 
 	defer func() {
 		if err := l.http.Close(); err != nil {
-			log.Fatal(fmt.Errorf("server stopped with error: %w", err))
+			zap.L().Error("server stopped with error", zap.Error(err))
 		}
 	}()
 
 	go func() {
-		log.Printf("server started")
+		zap.L().Info("server started")
 		errs <- l.http.ListenAndServe()
 	}()
 
 	err := <-errs
 	if err != nil {
-		log.Fatal("server exited with error: %w", err)
+		zap.L().Error("server exited with error", zap.Error(err))
 	}
 }
 
 func (l *LampAPI) setupRouter() *gin.Engine {
 	gin.SetMode(gin.ReleaseMode)
 	r := gin.Default()
+	r.Use(ginzap.Logger(3*time.Second, zap.L()))
+
 	r.GET("/helloworld", l.helloworld)
 
 	r.GET("/api/lamps", l.getLamps)
@@ -93,6 +97,7 @@ func (l *LampAPI) getLampByID(c *gin.Context) {
 	lamp, err := l.mongoClient.GetLampByID(id)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"status": 404, "error": "failed to get lamp"})
+		zap.L().Error("failed to get lamp", zap.Error(err))
 		return
 	}
 
@@ -103,6 +108,7 @@ func (l *LampAPI) getLamps(c *gin.Context) {
 	lamps, err := l.mongoClient.GetLamps()
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"status": 404, "error": "failed to get lamps"})
+		zap.L().Error("failed to get lamps", zap.Error(err))
 		return
 	}
 	c.JSON(http.StatusOK, lamps)
@@ -112,19 +118,22 @@ func (l *LampAPI) connectLamp(c *gin.Context) {
 	bodyBytes, err := ioutil.ReadAll(c.Request.Body)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"status": 500, "error": "failed to read request body"})
+		zap.L().Error("failed to read request body", zap.Error(err))
 		return
 	}
 
 	lamp := format.Lamp{}
 	err = json.Unmarshal(bodyBytes, &lamp)
 	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"status": 404, "error": "failed to parse JSON request"})
+		c.JSON(http.StatusBadRequest, gin.H{"status": 404, "error": "failed to parse request"})
+		zap.L().Error("failed to parse request", zap.Error(err))
 		return
 	}
 
 	err = l.mongoClient.CreateLamp(lamp)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"status": 500, "error": "failed to connect new lamp"})
+		zap.L().Error("failed to connect new lamp", zap.Error(err))
 		return
 	}
 
@@ -137,13 +146,15 @@ func (l *LampAPI) updateLamp(c *gin.Context) {
 	bodyBytes, err := ioutil.ReadAll(c.Request.Body)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"status": 500, "error": "failed to read request body"})
+		zap.L().Error("failed to read request body", zap.Error(err))
 		return
 	}
 
 	lamp := format.Lamp{}
 	err = json.Unmarshal(bodyBytes, &lamp)
 	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"status": 404, "error": "failed to parse JSON request"})
+		c.JSON(http.StatusBadRequest, gin.H{"status": 404, "error": "failed to parse request"})
+		zap.L().Error("failed to parse request", zap.Error(err))
 		return
 	}
 
@@ -152,6 +163,7 @@ func (l *LampAPI) updateLamp(c *gin.Context) {
 	err = l.mongoClient.UpdateLamp(lamp)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"status": 500, "error": "failed to update lamp"})
+		zap.L().Error("failed to update lamp", zap.Error(err))
 		return
 	}
 
@@ -163,6 +175,7 @@ func (l *LampAPI) deleteLamp(c *gin.Context) {
 	err := l.mongoClient.DeleteLamp(id)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"status": 400, "error": "failed to delete lamp"})
+		zap.L().Error("failed to delete lamp", zap.Error(err))
 		return
 	}
 

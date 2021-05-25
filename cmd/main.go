@@ -8,8 +8,10 @@ import (
 	"os/signal"
 	"syscall"
 
+	"github.com/procrastination-team/lamp.api/internal/logger"
 	"github.com/procrastination-team/lamp.api/pkg/api"
 	"github.com/procrastination-team/lamp.api/pkg/config"
+	"go.uber.org/zap"
 )
 
 var cfgFile string
@@ -24,13 +26,18 @@ func main() {
 	if err != nil {
 		log.Fatal(err)
 	}
+	err = logger.InitLogger(conf.Logger.File, conf.Logger.Level)
+	if err != nil {
+		log.Fatal(err)
+	}
 
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
 
 	lamp, err := api.New(conf, ctx)
 	if err != nil {
-		log.Fatal(err)
+		zap.L().Error("cannot initialize API", zap.Error(err))
+		return
 	}
 
 	done := make(chan os.Signal, 1)
