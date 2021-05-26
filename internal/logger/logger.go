@@ -33,7 +33,8 @@ func InitLogger(file string, level config.LogLevel) error {
 	Lg, _ := zap.Config{
 		Level:       lvl,
 		Encoding:    "json",
-		OutputPaths: []string{file},
+		OutputPaths: []string{file, "stdout"},
+		ErrorOutputPaths: []string{"stderr"},
 		EncoderConfig: zapcore.EncoderConfig{
 			MessageKey: "message",
 

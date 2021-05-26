@@ -1,15 +1,14 @@
 CMD := api
 
+run:
+	docker-compose -f ./deployment/docker-compose.yaml up
+
 docker:
 	docker build --tag $(CMD) -f ./Dockerfile .
 	docker run -p 80:80 $(CMD)
 
 build:
 	go build -o $(CMD) ./cmd/main.go
-
-run:
-	make build
-	./$(CMD)
 
 lint: 
 	golangci-lint run ./...

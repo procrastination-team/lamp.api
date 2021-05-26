@@ -34,7 +34,7 @@ func New(conf *config.DatabaseConfig, ctx context.Context) (*Storage, error) {
 
 	mongoSt := &Storage{
 		client:     client,
-		collection: client.Database("procrastination").Collection("lamps"),
+		collection: client.Database(conf.Database).Collection(conf.Collection),
 	}
 
 	return mongoSt, nil
