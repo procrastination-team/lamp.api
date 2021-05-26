@@ -7,6 +7,7 @@ import (
 	"io/ioutil"
 	"net"
 	"net/http"
+	"strings"
 	"time"
 
 	ginzap "github.com/akath19/gin-zap"
@@ -158,8 +159,14 @@ func (l *LampAPI) updateLamp(c *gin.Context) {
 		zap.L().Error("failed to parse request", zap.Error(err))
 		return
 	}
-
 	lamp.ID = id
+
+	current, err := l.mongoClient.GetLampByID(id)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"status": 404, "error": "failed to get lamp"})
+		zap.L().Error("failed to get lamp", zap.Error(err))
+		return
+	}
 
 	err = l.mongoClient.UpdateLamp(lamp)
 	if err != nil {
@@ -167,6 +174,31 @@ func (l *LampAPI) updateLamp(c *gin.Context) {
 		zap.L().Error("failed to update lamp", zap.Error(err))
 		return
 	}
+
+	var msg int
+	var topic strings.Builder
+	topic.WriteString("/lamps")
+	topic.WriteString(id)
+
+	if current.Power != lamp.Power {
+		topic.WriteString("/power")
+		if lamp.Power {
+			msg = 1
+		} else {
+			msg = 0
+		}
+	} else if current.Brightness != lamp.Brightness {
+		topic.WriteString("/brightness")
+		msg = lamp.Brightness
+	}
+
+	t := l.mqttClient.Publish(topic.String(), 0, false, msg)
+	go func() {
+		<-t.Done()
+		if t.Error() != nil {
+			zap.L().Error("failed to publish changes", zap.Error(err))
+		}
+	}()
 
 	c.JSON(http.StatusOK, gin.H{"status": "OK"})
 }
