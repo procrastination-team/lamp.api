@@ -3,6 +3,7 @@ package api
 import (
 	"context"
 	"encoding/json"
+	"fmt"
 	"io/ioutil"
 	"net"
 	"net/http"
@@ -24,7 +25,7 @@ type LampAPI struct {
 }
 
 func New(conf *config.Settings, ctx context.Context) (*LampAPI, error) {
-	/*	opts := mqtt.NewClientOptions()
+	opts := mqtt.NewClientOptions()
 		opts.AddBroker(fmt.Sprintf("tcp://%s", conf.Mqtt.Address))
 		opts.SetUsername(conf.Mqtt.Username)
 		opts.SetPassword(conf.Mqtt.Password)
@@ -35,8 +36,8 @@ func New(conf *config.Settings, ctx context.Context) (*LampAPI, error) {
 		for !token.WaitTimeout(3 * time.Second) {
 		}
 		if err := token.Error(); err != nil {
-			log.Fatal(err)
-		}*/
+			zap.L().Error("failed to connect to mqtt", zap.Error(err))
+		}
 
 	mongo, err := db.New(&conf.Database, ctx)
 	if err != nil {
@@ -48,7 +49,7 @@ func New(conf *config.Settings, ctx context.Context) (*LampAPI, error) {
 			Addr: net.JoinHostPort(conf.Host, conf.Port),
 		},
 		mongoClient: mongo,
-		//		mqttClient:  client,
+				mqttClient:  client,
 	}
 	l.http.Handler = l.setupRouter()
 

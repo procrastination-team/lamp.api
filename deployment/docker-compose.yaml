@@ -1,7 +1,7 @@
 version: '3.8'
 networks:
-  #  mq:
-  #    driver: bridge
+  mq:
+    driver: bridge
   db:
     driver: bridge
 services:
@@ -27,18 +27,16 @@ services:
     env_file: ../configs/.env
     networks:
       - db
-        #    links:
-        #- mongodb
 
-        #  broker:
-        #    container_name: broker
-        #    hostname: broker
-        #    image: "eclipse-mosquitto"
-        #    ports:
-        #      - 1883:1883
-        #      - 9001:9001
-        #    networks:
-        #      - mq
+  broker:
+    container_name: broker
+    hostname: broker
+    image: "eclipse-mosquitto"
+    ports:
+      - 1883:1883
+      - 9001:9001
+    networks:
+      - mq
 
   api:
     build:
@@ -49,7 +47,7 @@ services:
     restart: on-failure
     depends_on:
       - mongodb
-        #      - broker
+      - broker
     networks:
       - db
-        #      - mq
+      - mq

@@ -15,8 +15,8 @@
   "mqtt":
   {
     "address": "broker:1883",
-    "username": "root",
-    "password": "pass12345",
-    "clientId": "1"
+    "username": "api",
+    "password": "iwanttosleep",
+    "clientId": "0"
   }
 }
