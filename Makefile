@@ -1,7 +1,7 @@
 CMD := api
 
 run:
-	docker-compose -f ./deployment/docker-compose.yaml up
+	docker-compose -f ./deployment/docker-compose.yaml up -d
 
 docker:
 	docker build --tag $(CMD) -f ./Dockerfile .
