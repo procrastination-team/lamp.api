@@ -177,7 +177,7 @@ func (l *LampAPI) updateLamp(c *gin.Context) {
 
 	var msg int
 	var topic strings.Builder
-	topic.WriteString("/lamps")
+	topic.WriteString("/room/lamp")
 	topic.WriteString(id)
 
 	if current.Power != lamp.Power {
