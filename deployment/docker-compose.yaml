@@ -1,0 +1,55 @@
+version: '3.8'
+networks:
+  mq:
+    driver: bridge
+  db:
+    driver: bridge
+services:
+  mongodb:
+    container_name: mongodb
+    hostname: mongodb
+    image: mongo:4.0
+    command: mongod --smallfiles
+    ports:
+      - 27017:27017
+    env_file: ../configs/.env
+    volumes:
+      - ./mongod.conf:/etc/mongod.conf
+    networks:
+      - db
+    depends_on:
+      - mongo_seed
+
+  mongo_seed:
+    build:
+      context: ./
+      dockerfile: ./Dockerfile_mongo
+    env_file: ../configs/.env
+    networks:
+      - db
+
+  broker:
+    container_name: broker
+    hostname: broker
+    image: "eclipse-mosquitto"
+    ports:
+      - 1883:1883
+      - 9001:9001
+    volumes:
+      - ./mosquitto.conf:/mosquitto/config/mosquitto.conf
+    networks:
+      - mq
+
+  api:
+    build:
+      context: ../
+      dockerfile: ./build/Dockerfile
+    ports:
+      - 1337:1337
+    restart: on-failure
+    depends_on:
+      - mongodb
+      - broker
+    networks:
+      - db
+      - mq

@@ -1,9 +1,22 @@
 {
-  "listen_address": "0.0.0.0:1337",
+  "host": "0.0.0.0",
+  "port": "1337",
+  "logger":
+  {
+    "file": "api.log",
+    "level": "debug"
+  },
   "database":
   {
-    "address": "mongodb://root:pass12345@127.0.0.1:27017",
-    "database": "default",
+    "address": "mongodb://root:pass12345@mongodb:27017",
+    "database": "procrastination",
     "collection": "lamps"
+  },
+  "mqtt":
+  {
+    "address": "broker:1883",
+    "username": "api",
+    "password": "iwanttosleep",
+    "clientId": "0"
   }
 }

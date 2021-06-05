@@ -34,7 +34,7 @@ func New(conf *config.DatabaseConfig, ctx context.Context) (*Storage, error) {
 
 	mongoSt := &Storage{
 		client:     client,
-		collection: client.Database("procrastination").Collection("lamps"),
+		collection: client.Database(conf.Database).Collection(conf.Collection),
 	}
 
 	return mongoSt, nil
@@ -63,7 +63,7 @@ func (s *Storage) CreateLamp(lamp format.Lamp) error {
 }
 
 func (s *Storage) UpdateLamp(lamp format.Lamp) error {
-	_, err := s.collection.UpdateOne(context.TODO(), bson.D{{"id", lamp.ID}},  bson.M{"$set": lamp}, options.Update().SetUpsert(true))
+	_, err := s.collection.UpdateOne(context.TODO(), bson.M{"id": lamp.ID}, bson.M{"$set": lamp}, options.Update().SetUpsert(true))
 	return err
 }
 
