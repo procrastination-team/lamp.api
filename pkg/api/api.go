@@ -5,8 +5,11 @@ import (
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
+	"log"
 	"net"
 	"net/http"
+	"os"
+	"strconv"
 	"strings"
 	"time"
 
@@ -44,6 +47,10 @@ func New(conf *config.Settings, ctx context.Context) (*LampAPI, error) {
 	if err != nil {
 		return nil, err
 	}
+
+	mqtt.ERROR = log.New(os.Stdout, "[ERROR] ", 0)
+	mqtt.CRITICAL = log.New(os.Stdout, "[CRIT] ", 0)
+	mqtt.WARN = log.New(os.Stdout, "[WARN]  ", 0)
 
 	l := &LampAPI{
 		http: &http.Server{
@@ -177,8 +184,8 @@ func (l *LampAPI) updateLamp(c *gin.Context) {
 
 	var msg int
 	var topic strings.Builder
-	topic.WriteString("/room/lamp")
-	topic.WriteString(id)
+	topic.WriteString("lamp")
+	//	topic.WriteString(id)
 
 	if current.Power != lamp.Power {
 		topic.WriteString("/power")
@@ -191,12 +198,12 @@ func (l *LampAPI) updateLamp(c *gin.Context) {
 		topic.WriteString("/brightness")
 		msg = lamp.Brightness
 	}
-
-	t := l.mqttClient.Publish(topic.String(), 0, false, msg)
+	log.Println(topic.String())
+	t := l.mqttClient.Publish(topic.String(), 1, false, strconv.Itoa(msg))
 	go func() {
 		<-t.Done()
 		if t.Error() != nil {
-			zap.L().Error("failed to publish changes", zap.Error(err))
+			zap.L().Error(t.Error().Error())
 		}
 	}()
 
