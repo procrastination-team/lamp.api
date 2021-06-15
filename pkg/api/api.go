@@ -105,7 +105,7 @@ func (l *LampAPI) getLampByID(c *gin.Context) {
 
 	lamp, err := l.mongoClient.GetLampByID(id)
 	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"status": 404, "error": "failed to get lamp"})
+		c.JSON(http.StatusBadRequest, gin.H{"status": 400, "error": "failed to get lamp"})
 		zap.L().Error("failed to get lamp", zap.Error(err))
 		return
 	}
@@ -116,7 +116,7 @@ func (l *LampAPI) getLampByID(c *gin.Context) {
 func (l *LampAPI) getLamps(c *gin.Context) {
 	lamps, err := l.mongoClient.GetLamps()
 	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"status": 404, "error": "failed to get lamps"})
+		c.JSON(http.StatusBadRequest, gin.H{"status": 400, "error": "failed to get lamps"})
 		zap.L().Error("failed to get lamps", zap.Error(err))
 		return
 	}
@@ -162,7 +162,7 @@ func (l *LampAPI) updateLamp(c *gin.Context) {
 	lamp := format.Lamp{}
 	err = json.Unmarshal(bodyBytes, &lamp)
 	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"status": 404, "error": "failed to parse request"})
+		c.JSON(http.StatusBadRequest, gin.H{"status": 400, "error": "failed to parse request"})
 		zap.L().Error("failed to parse request", zap.Error(err))
 		return
 	}
@@ -170,7 +170,7 @@ func (l *LampAPI) updateLamp(c *gin.Context) {
 
 	current, err := l.mongoClient.GetLampByID(id)
 	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"status": 404, "error": "failed to get lamp"})
+		c.JSON(http.StatusBadRequest, gin.H{"status": 400, "error": "failed to get lamp"})
 		zap.L().Error("failed to get lamp", zap.Error(err))
 		return
 	}
