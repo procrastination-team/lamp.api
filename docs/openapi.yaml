@@ -1,0 +1,59 @@
+openapi: 3.0.1
+info:
+  title: Lamp API
+  version: 0.0.1
+paths:
+  /api/lamps:
+    get:
+      responses:
+        200:
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LampList'
+        500:
+          description: Failed to get lamps
+          content: {}
+  /api/lamp/{lampID}:
+    put:
+      parameters:
+        - in: path
+          name: lampID
+          schema:
+            type: string
+          required: true
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Lamp'
+        required: true
+      responses:
+        '200':
+          description: OK
+          content: {}
+        '400':
+          description: Failed to update lamp
+          content: {}
+components:
+  schemas:
+    Lamp:
+      required:
+      - id
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        group:
+          type: string
+        power:
+          type: boolean
+        brightness:
+          type: integer
+    LampList:
+      type: array
+      items:
+        $ref: '#/components/schemas/Lamp'
